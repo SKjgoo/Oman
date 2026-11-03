@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="ar" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex"><title>فحص ملفات الموقع</title>
+<style>body{font-family:system-ui,sans-serif;margin:0;padding:16px;background:#f5f1e8;color:#1a1a1a;line-height:1.7}
+h1{font-size:1.3rem}.s{padding:12px 14px;border-radius:10px;margin:10px 0;font-weight:700}.ok{background:#d9f0df;color:#0b5a2a}.bad{background:#fbdada;color:#8a1111}
+li{font-family:ui-monospace,monospace;font-size:.85rem;word-break:break-all;direction:ltr;text-align:left}</style></head>
+<body><h1>فحص ملفات الموقع المنشور</h1>
+<p>تفتح هذه الصفحة كل صورة يحتاجها الموقع (الأغلفة، ومشاهد 360°، والمعارض) وتخبرك بما هو غير موجود على الخادم. احذف هذا الملف بعد الفحص.</p>
+<div id="sum" class="s">جارٍ الفحص…</div><ul id="miss"></ul>
+<script src="js/data.js?v=15"></script><script src="js/gallery-data.js?v=15"></script>
+<script>
+const urls=new Set(['images/customer-service.png']);
+DESTINATIONS.forEach(d=>{urls.add('images/'+d.id+'.jpg'); if(d.vr) urls.add('images/360/'+d.id+'.jpg');});
+Object.keys(CATEGORIES).forEach(k=>urls.add('images/cat/'+k+'.jpg'));
+Object.values(GALLERY).forEach(a=>a.forEach(g=>urls.add(g.src)));
+const list=[...urls]; let done=0,bad=[];
+list.forEach(u=>{const i=new Image();
+  const fin=()=>{done++; if(done===list.length){const s=document.getElementById('sum');
+    s.className='s '+(bad.length?'bad':'ok');
+    s.textContent=bad.length?`ناقص ${bad.length} من ${list.length} ملفًا — ارفعها بنفس المسارات:`:`كل الملفات (${list.length}) موجودة ✓`;
+    document.getElementById('miss').innerHTML=bad.sort().map(x=>`<li>${x}</li>`).join('');}};
+  i.onload=fin; i.onerror=()=>{bad.push(u);fin();}; i.src=u+'?c='+Date.now();});
+</script></body></html>
